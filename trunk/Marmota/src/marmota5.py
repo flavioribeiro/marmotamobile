@@ -3,34 +3,46 @@
 import appuifw
 import graphics
 import e32
+import lightblue
 
 IMGS_DIR = "E:\\Marmota\\images\\interface\\"
 
 class Connection(object):
 
     def __init__(self):
-        pass
-     
+        self.my_socket = lightblue.socket()
+        self.connected = False
+
     def listDevices(self):
-        pass
-   
+        self.devices_available = lightblue.finddevices()
+        return self.devices_available
+
     def connect(self, device):
-        pass
+        try: 
+            self.my_socket.connect((device[0], 1))
+            appuifw.note(u"Connecting to " + unicode(device[1]))
+            self.connected = True
+            return True
+
+        except:
+            self.connected = False
+            return False
 
     def disconnect(self):
-        pass
-        
+        self.connected = False
+        self.my_socket.close()
+
     def goAhead(self):
-        pass
-        
+        if self.connected: self.my_socket.send("g")
+
     def turnLeft(self):
-        pass
-        
+        if self.connected: self.my_socket.send("l")
+
     def turnRight(self):
-        pass
-        
+        if self.connected: self.my_socket.send("r")
+
     def stop(self):
-        pass
+        if self.connected: self.my_socket.send("s")
 
 class Display(object):
 
@@ -46,7 +58,7 @@ class Display(object):
         self.stop()
         self.canvas = appuifw.Canvas(redraw_callback=self.handleRedraw)
         
-        appuifw.app.screen          = 'full'
+        appuifw.app.screen          = 'large'
         appuifw.app.directional_pad = False
         appuifw.app.orientation     = 'landscape'
         appuifw.app.body            = self.canvas
